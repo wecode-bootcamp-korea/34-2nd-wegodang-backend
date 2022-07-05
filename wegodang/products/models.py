@@ -5,12 +5,12 @@ class Category(models.Model):
     image = models.CharField(max_length=200)
 
     class Meta:
-        db_table = 'catergories'
+        db_table = 'categories'
 
 class Product(models.Model):
     name           = models.CharField(max_length=45)
-    total_pirce    = models.DecimalField(max_digits=10, decimal_places=2)
-    goal_pirce     = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price    = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    goal_price     = models.DecimalField(max_digits=10, decimal_places=2)
     suppoters      = models.IntegerField()
     start_date     = models.DateField()
     end_date       = models.DateField()
@@ -18,6 +18,7 @@ class Product(models.Model):
     slide_title    = models.TextField()
     slide_subtitle = models.TextField()
     category       = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
+    user           = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="products")
 
     class Meta:
         db_table = 'products'
@@ -37,3 +38,4 @@ class ProductImage(models.Model):
 
     class Meta:
         db_table = 'product_images'
+        
