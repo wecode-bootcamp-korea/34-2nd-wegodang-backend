@@ -1,3 +1,4 @@
+from urllib import response
 from django.test     import TestCase, Client
 from products.models import Category, Product, ProductImage
 from users.models    import User
@@ -41,6 +42,7 @@ class ProductViewTest(TestCase):
         User.objects.create(
             id         = 1,
             kakao_id   = 1,
+            user_name  = "유저네임",
             updated_at = "2022-01-02"
         )
 
@@ -84,7 +86,9 @@ class ProductViewTest(TestCase):
                     "goal_percent"   : 100,
                     "total_price"    : 10,
                     "suppoters"      : 10,
-                    "remaining_days" : 1,
+                    "start_date"     : "2022-01-01",
+                    "end_date"       : "2022-07-12",
+                    "remaining_days" : 0,
                     "story"          : "스토리",
                     "image_url": [
                         {
@@ -95,3 +99,27 @@ class ProductViewTest(TestCase):
                 }
             }
         )
+    
+    def test_success_get_product_lists(self):
+            response = self.client.get('/products')
+
+            self.assertEqual(response.status_code, 200)
+
+            self.assertEqual(response.json(),
+                {
+                    "products": [
+                        {
+                            "product_id"     : 1,
+                            "product_name"   : "테스트",
+                            "category_name"  : "카테고리",
+                            "user"           : "유저네임",
+                            "goal_percent"   : 100,
+                            "goal_price"     : 10,
+                            "remaining_days" : 0,
+                            "image_url"      : "테스트.url",
+                            "slide_title"    : "슬라이더_타이틀",
+                            "slide_subtitle" : "슬라이더_서브타이틀"
+                        }
+                    ]
+                }
+            )
