@@ -1,6 +1,8 @@
 import jwt
 import requests
 import json
+import boto3
+import uuid
 
 from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
@@ -9,6 +11,7 @@ from django.conf            import settings
 
 from users.models           import User
 from users.validator        import validate_email
+from users.utils            import login_required
 
 class KaKaoSignUpView(View):
     def get(self, request):
@@ -61,3 +64,56 @@ class KaKaoSignUpView(View):
 
         except KeyError:
             return JsonResponse({"message" : "KEYERROR"}, status = 400)
+
+class S3ImgUploader:
+    def __init__(self, file):
+        self.file = file
+
+    def upload(self):
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id     = settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
+        )
+        url = 'img'+'/'+uuid.uuid4().hex
+        
+        s3_client.upload_fileobj(
+            self.file, 
+            "wegodang", 
+            url, 
+            ExtraArgs={
+                "ContentType": self.file.content_type
+            }
+        )
+        return url
+
+class ProfileView(View):
+    @login_required
+    def post(self, request):
+        try:
+            file              = request.FILES.get('file')
+            profile_image_url = S3ImgUploader(file).upload()
+            user = request.user
+
+            if not profile_image_url:
+                return JsonResponse({'message' : 'FILE_UPLOAD_ERROR'}, status=400)
+
+            user.update(profile_image = profile_image_url)
+
+            return JsonResponse({"message" : "UPLOAD_SUCCESS"}, status=201)
+        
+        except KeyError:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+
+    @login_required
+    def get(self, request, user_id):
+        user = User.objects.get(id = user_id)
+
+        user_info = {
+            "user_id"       : user.id,
+            "user_name"     : user.user_name,
+            "email"         : user.email,
+            "profile_image" : user.profile_image
+        }
+
+        return JsonResponse({"user_info": user_info}, status=200)

@@ -32,7 +32,9 @@ class ProductView(View):
         products = {
             "product_id"     : product.id,
             "product_name"   : product.name,
+            "category_name"  : product.category.name,
             "goal_percent"   : int(product.total_price / product.goal_price * 100),
+            "goal_price"     : int(product.goal_price),
             "total_price"    : int(product.total_price),
             "suppoters"      : product.suppoters,
             "start_date"     : product.start_date,
@@ -48,7 +50,7 @@ class ProductListView(View):
     def get(self, request):
         category = request.GET.get('category_id')
         offset   = int(request.GET.get('offset', 0))
-        limit    = int(request.GET.get('limit', 5))
+        limit    = int(request.GET.get('limit', 12))
         order    = request.GET.get('order')
         now      = date.today()
 
