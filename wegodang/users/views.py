@@ -1,3 +1,4 @@
+from msilib.schema import Error
 import jwt
 import requests
 import json
@@ -10,16 +11,33 @@ from django.conf            import settings
 from users.models           import User
 from users.validator        import validate_email
 
-class KaKaoSignUpView(View):
-    def get(self, request):
-        access_token     = request.headers.get('Authorization')
-        KAKAO_INFO_API   = 'https://kapi.kakao.com/v2/user/me'
-        response         = requests.get(KAKAO_INFO_API, headers={'Authorization': f'Bearer {access_token}'}, timeout=5)
+class KakaoAPI():
+    def __init__(self, KAKAO_REST_KEY):
+        self.KAKAO_REST_KEY = KAKAO_REST_KEY
 
-        if not response.status_code == 200:
-            return JsonResponse({'message' : 'INVALID_RESPONSE' }, status = 400)
+    def get_user_information(self, token):
+        KAKAO_INFO_API = 'https://kapi.kakao.com/v2/user/me'
+        response       = requests.get(KAKAO_INFO_API, headers={'Authorization': f'Bearer {token}'}, timeout=5)
+        
+        if not response.ok:
+            raise Error 
 
         user_information = response.json()
+        return user_information
+
+    def get_map_information(self):
+        pass
+
+    def check_kakao_user(self, token):
+        return True | False
+
+
+class KaKaoSignUpView(View):
+    def get(self, request):
+        access_token = request.headers.get('Authorization')
+        kakao_api    = KakaoAPI(settings.KAKAO_REST_KEY)
+        
+        user_information = kakao_api.get_user_information(access_token)
         kakao_id         = user_information['id']
         user_name        = user_information['properties']['nickname']
         email            = user_information['kakao_account']['email']
