@@ -22,7 +22,7 @@ class S3Client:
                 "ContentType": file.content_type
             }
         )
-        return url
+        return f'https://wegodang.s3.ap-northeast-2.amazonaws.com/{url}'
 
 class FileUploader:
     def __init__(self, client):
