@@ -34,6 +34,7 @@ class ProductView(View):
             "product_name"   : product.name,
             "category_name"  : product.category.name,
             "goal_percent"   : int(product.total_price / product.goal_price * 100),
+            "goal_price"     : int(product.goal_price),
             "total_price"    : int(product.total_price),
             "suppoters"      : product.suppoters,
             "start_date"     : product.start_date,

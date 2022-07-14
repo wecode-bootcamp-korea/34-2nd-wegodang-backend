@@ -1,6 +1,8 @@
 import jwt
 import requests
 import json
+import boto3
+import uuid
 
 from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
@@ -9,6 +11,8 @@ from django.conf            import settings
 
 from users.models           import User
 from users.validator        import validate_email
+from users.utils            import login_required
+from storage                import s3_file_uploader
 
 class KaKaoSignUpView(View):
     def get(self, request):
@@ -16,7 +20,7 @@ class KaKaoSignUpView(View):
         KAKAO_INFO_API   = 'https://kapi.kakao.com/v2/user/me'
         response         = requests.get(KAKAO_INFO_API, headers={'Authorization': f'Bearer {access_token}'}, timeout=5)
 
-        if not response.status_code == 200:
+        if not response.ok:
             return JsonResponse({'message' : 'INVALID_RESPONSE' }, status = 400)
 
         user_information = response.json()
@@ -61,3 +65,34 @@ class KaKaoSignUpView(View):
 
         except KeyError:
             return JsonResponse({"message" : "KEYERROR"}, status = 400)
+
+class ProfileView(View):
+    @login_required
+    def post(self, request):
+        try:
+            file              = request.FILES.get('file')
+            profile_image_url = s3_file_uploader.upload(file)
+            user              = request.user
+
+            if not profile_image_url:
+                return JsonResponse({'message' : 'FILE_UPLOAD_ERROR'}, status=400)
+
+            User.objects.filter(id=user.id).update(profile_image = profile_image_url)
+
+            return JsonResponse({"message" : "UPLOAD_SUCCESS"}, status=201)
+        
+        except KeyError:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+
+    @login_required
+    def get(self, request):
+        user = request.user
+
+        user_info = {
+            "user_id"       : user.id,
+            "user_name"     : user.user_name,
+            "email"         : user.email,
+            "profile_image" : user.profile_image
+        }
+
+        return JsonResponse({"user_info": user_info}, status=200)
