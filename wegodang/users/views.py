@@ -12,6 +12,7 @@ from django.conf            import settings
 from users.models           import User
 from users.validator        import validate_email
 from users.utils            import login_required
+from storage                import s3_client, FileUploader
 
 class KaKaoSignUpView(View):
     def get(self, request):
@@ -19,7 +20,7 @@ class KaKaoSignUpView(View):
         KAKAO_INFO_API   = 'https://kapi.kakao.com/v2/user/me'
         response         = requests.get(KAKAO_INFO_API, headers={'Authorization': f'Bearer {access_token}'}, timeout=5)
 
-        if not response.status_code == 200:
+        if not response.ok:
             return JsonResponse({'message' : 'INVALID_RESPONSE' }, status = 400)
 
         user_information = response.json()
@@ -65,34 +66,13 @@ class KaKaoSignUpView(View):
         except KeyError:
             return JsonResponse({"message" : "KEYERROR"}, status = 400)
 
-class S3ImgUploader:
-    def __init__(self, file):
-        self.file = file
-
-    def upload(self):
-        s3_client = boto3.client(
-            's3',
-            aws_access_key_id     = settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
-        )
-        url = 'img'+'/'+uuid.uuid4().hex
-        
-        s3_client.upload_fileobj(
-            self.file, 
-            "wegodang", 
-            url, 
-            ExtraArgs={
-                "ContentType": self.file.content_type
-            }
-        )
-        return url
-
 class ProfileView(View):
     @login_required
     def post(self, request):
         try:
             file              = request.FILES.get('file')
-            profile_image_url = S3ImgUploader(file).upload()
+            s3_file_uploader  = FileUploader(file)
+            profile_image_url = s3_file_uploader.upload(file)
             user = request.user
 
             if not profile_image_url:
