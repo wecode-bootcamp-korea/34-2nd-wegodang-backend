@@ -28,8 +28,9 @@
 <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"><img src="https://img.shields.io/badge/django-092E20?style=for-the-badge&logo=django&logoColor=white"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
 <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"><img src="https://img.shields.io/badge/Kakao REST API-FFCD00?style=for-the-badge&logo=Kakao&logoColor=white">
 
+## 🌟 ERD
 
-<br />
+<img width="1352" alt="스크린샷 2022-07-17 오후 2 55 35" src="https://user-images.githubusercontent.com/104283159/179389591-bf1f91b9-20ef-485a-b099-1377817ddf98.png">
 
 ## 🌟 구현 Api
 
@@ -76,5 +77,7 @@
 ## 🌟 Links
 
 [Wadiz](https://www.wadiz.kr/web/main)
+
+[Wegodang FrontEnd Repository](https://github.com/wecode-bootcamp-korea/34-2nd-wegodang-frontend)
 
 [프로젝트 회고 - BackEnd](https://velog.io/@wsvgc95/Wegodang-Wecode-2%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
