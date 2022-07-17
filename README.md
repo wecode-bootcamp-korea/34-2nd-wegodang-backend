@@ -80,4 +80,4 @@
 
 [Wegodang FrontEnd Repository](https://github.com/wecode-bootcamp-korea/34-2nd-wegodang-frontend)
 
-[프로젝트 회고 - BackEnd](https://velog.io/@wsvgc95/Wegodang-Wecode-2%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
+[Wegodang 프로젝트 회고 - BackEnd](https://velog.io/@wsvgc95/Wegodang-Wecode-2%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
